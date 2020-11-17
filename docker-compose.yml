@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+    schemaspy:
+        container_name: schemaspy
+        build:
+            context:    ${DOCKER_DIRECTORY}/docker/
+            dockerfile: ${DOCKER_DIRECTORY}/docker/Dockerfile
+        network_mode:   host
+        environment:
+            DATABASE_HOST:          ${DATABASE_HOST}
+            DATABASE_DB:            ${DATABASE_DB}
+            DATABASE_USERNAME:      ${DATABASE_USERNAME}
+            DATABASE_PASSWORD:      ${DATABASE_PASSWORD}
+            DATABASE_PORT:          ${DATABASE_PORT}
+            DATABASE_TYPE:          ${DATABASE_TYPE}
+            DATABASE_JDBC_FILENAME: ${DATABASE_JDBC_FILENAME}
+            DATABASE_SCHEMA:        ${DATABASE_SCHEMA}
+        volumes:
+            - ${DOCKER_DIRECTORY}/resources/:/schemaspy/resources/:rw
+            - ${DOCKER_DIRECTORY}/export/${EXPORT_DIRECTORY}:/schemaspy/export/${EXPORT_DIRECTORY}:rw
+            - ${DOCKER_DIRECTORY}/run_schemaspy.sh:/schemaspy/run_schemaspy.sh:ro
+        command:        ./schemaspy/run_schemaspy.sh
