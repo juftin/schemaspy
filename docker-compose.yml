@@ -1,12 +1,17 @@
 version: "3.7"
 
+networks:
+    internal:
+        driver: bridge
+
 services:
     schemaspy:
         container_name: schemaspy
         build:
             context:    ${DOCKER_DIRECTORY}/docker/
             dockerfile: ${DOCKER_DIRECTORY}/docker/Dockerfile
-        network_mode:   host
+        networks:
+            internal: null
         environment:
             DATABASE_HOST:          ${DATABASE_HOST}
             DATABASE_DB:            ${DATABASE_DB}
@@ -19,5 +24,19 @@ services:
         volumes:
             - ${DOCKER_DIRECTORY}/resources/:/schemaspy/resources/:rw
             - ${DOCKER_DIRECTORY}/export/${EXPORT_DIRECTORY}:/schemaspy/export/${EXPORT_DIRECTORY}:rw
-            - ${DOCKER_DIRECTORY}/run_schemaspy.sh:/schemaspy/run_schemaspy.sh:ro
-        command:        ./schemaspy/run_schemaspy.sh
+        command:        >
+                        java -jar "/schemaspy/resources/schemaspy-6.1.0.jar" \
+                          -t "${DATABASE_TYPE}" \
+                          -dp "/schemaspy/resources/${DATABASE_JDBC_FILENAME}" \
+                          -host "${DATABASE_HOST}" \
+                          -port "${DATABASE_PORT}" \
+                          -db "${DATABASE_DB}" \
+                          -u "${DATABASE_USERNAME}" \
+                          -p "${DATABASE_PASSWORD}" \
+                          -o "/schemaspy/export/${EXPORT_DIRECTORY}" \
+                          -s "${DATABASE_SCHEMA}" \
+                          -connprops "useSSL\\=True;" \
+                          illegal-access=warn \
+                          -hq \
+                          -debug
+
