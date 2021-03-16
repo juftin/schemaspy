@@ -10,6 +10,7 @@ services:
             - ${DOCKER_DIRECTORY}/resources/:/schemaspy/resources/:rw
             - ${DOCKER_DIRECTORY}/export/:/schemaspy/export/:rw
             - ${DOCKER_DIRECTORY}/profiles/:/schemaspy/profiles/:rw
+        network_mode:   host
         command:        >
                         java -jar "/schemaspy/resources/schemaspy-6.1.0.jar" \
                             -configFile ${CONFIG_FILE} \
